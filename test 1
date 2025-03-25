@@ -1,0 +1,39 @@
+const synth = window.speechSynthesis;
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'pt-BR';
+recognition.continuous = false;
+
+const keiVoice = new SpeechSynthesisUtterance();
+keiVoice.lang = 'pt-BR';
+keiVoice.rate = 1;
+keiVoice.pitch = 1;
+keiVoice.voice = synth.getVoices().find(voice => voice.name.includes("Google")); // Ajuste a voz depois
+
+function speak(text) {
+    keiVoice.text = text;
+    synth.speak(keiVoice);
+}
+
+document.getElementById("startListening").addEventListener("click", () => {
+    recognition.start();
+});
+
+recognition.onresult = function(event) {
+    let said = event.results[0][0].transcript.toLowerCase();
+    document.getElementById("output").innerText = "Você disse: " + said;
+
+    if (said.includes("olá kei")) {
+        speak("Oi! Como posso ajudar?");
+    } else if (said.includes("como você está")) {
+        speak("Estou bem! E você?");
+    } else if (said.includes("toque uma música")) {
+        speak("Abrindo seu player de música...");
+        window.open("https://music.youtube.com/");
+    } else {
+        speak("Desculpe, não entendi.");
+    }
+};
+
+recognition.onerror = function(event) {
+    console.log("Erro no reconhecimento: ", event.error);
+};
